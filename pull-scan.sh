@@ -17,7 +17,7 @@ else
 fi
 
 # Scans the image
-c1cs scan -e "artifactscan.$REGION.cloudone.trendmicro.com" docker-archive:"$IMAGE_TARBALL" > "$SCAN_RESULT_ARTIFACT"
+tmas scan -e "artifactscan.$REGION.cloudone.trendmicro.com" docker-archive:"$IMAGE_TARBALL" > "$SCAN_RESULT_ARTIFACT"
 
 # print the result
 cat "$SCAN_RESULT_ARTIFACT"
