@@ -20,7 +20,7 @@ else
 fi
 
 # Scans the image
-tmas scan --endpoint "artifactscan.$REGION.cloudone.trendmicro.com" docker-archive:"$IMAGE_TARBALL" > "$SCAN_RESULT_ARTIFACT"
+tmas scan --endpoint "https://artifactscan.$REGION.cloudone.trendmicro.com" docker-archive:"$IMAGE_TARBALL" > "$SCAN_RESULT_ARTIFACT"
 
 # print the result
 cat "$SCAN_RESULT_ARTIFACT"
