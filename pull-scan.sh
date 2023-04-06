@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install cli on latest version
+curl -s -L  https://gist.githubusercontent.com/raphabot/abae09b46c29afc7c3b918b7b8ec2a5c/raw/d87fbede38544d1adf5953fd0ce104e935c3a8dc/tmas-install.sh | bash
+
 # Sets default value for IMAGE_TARBALL
 IMAGE_TARBALL="image.tar"
 
