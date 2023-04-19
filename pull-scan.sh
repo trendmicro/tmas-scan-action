@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install cli on latest version
-curl -s -L  https://gist.githubusercontent.com/raphabot/abae09b46c29afc7c3b918b7b8ec2a5c/raw/d87fbede38544d1adf5953fd0ce104e935c3a8dc/tmas-install.sh | bash
+curl -s -L  https://gist.githubusercontent.com/raphabot/abae09b46c29afc7c3b918b7b8ec2a5c/raw/90c24ac0eb5235819bbb3ee7f575500d7debfcfb/tmas-install.sh | bash
 
 # Sets default value for IMAGE_TARBALL
 IMAGE_TARBALL="image.tar"
@@ -24,7 +24,6 @@ tmas scan --endpoint "https://artifactscan.$REGION.cloudone.trendmicro.com" dock
 
 # print the result
 cat "$SCAN_RESULT_ARTIFACT"
-
 
 # Evaluates the result
 MESSAGE=""
