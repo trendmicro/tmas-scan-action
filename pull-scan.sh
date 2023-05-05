@@ -20,7 +20,13 @@ else
 fi
 
 # Scans the image
-tmas scan --endpoint "https://artifactscan.$REGION.cloudone.trendmicro.com" docker-archive:"$IMAGE_TARBALL" > "$SCAN_RESULT_ARTIFACT"
+tmas scan --endpoint "https://artifactscan.$REGION.cloudone.trendmicro.com" docker-archive:"$IMAGE_TARBALL" "$(if [ "$SBOM" = true ]; then echo "--saveSBOM"; fi)" > "$SCAN_RESULT_ARTIFACT"
+
+# If saving SBOM is true
+if [ "$SBOM" = true ]; then
+  # Rename SBOM File to standard name so it can be exported later.
+  mv SBOM_* SBOM.json
+fi
 
 # print the result
 cat "$SCAN_RESULT_ARTIFACT"

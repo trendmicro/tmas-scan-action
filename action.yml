@@ -12,6 +12,10 @@ inputs:
     description: "Cloud One Region"
     required: true
     default: "us-1"
+  SBOM:
+    description: "Decide if you want to save the SBOM file for the image. Default is true."
+    required: false
+    default: "true"
   MAX_TOTAL:
     description: "Max total of vulnerabilities acceptable in a images"
     required: false
@@ -57,6 +61,7 @@ runs:
     CLOUD_ONE_API_KEY: ${{ inputs.CLOUD_ONE_API_KEY }}
     IMAGE: ${{ inputs.IMAGE }}
     REGION: ${{ inputs.REGION }}
+    SBOM: ${{ inputs.SBOM }}
     MAX_TOTAL: ${{ inputs.MAX_TOTAL }}
     MAX_CRITICAL: ${{ inputs.MAX_CRITICAL }}
     MAX_HIGH: ${{ inputs.MAX_HIGH }}
