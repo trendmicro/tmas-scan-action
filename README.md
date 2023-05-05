@@ -26,6 +26,7 @@ Add an Action in your `.github/workflow` yml file to scan your image with Trend 
       REGION: us-1
 
       # Optional
+      SBOM: true # Saves SBOM to SBOM.json so you can export it as an artifact later.
       IMAGE: alpine # The image need to be public or the pipeline need to have access to the private image of choice.
       LOCAL_IMAGE_TARBALL: image.tar
       # For each threshold below, select the maximum number of vulnerabilities that are acceptable.
@@ -41,13 +42,19 @@ Add an Action in your `.github/workflow` yml file to scan your image with Trend 
 
 ## Artifacts (Optional)
 
-Artifacts allow you to share data between jobs in a workflow and store data once that workflow has completed, in this case saving the scan as an artifact allow you to have proof on what happened on past scans. In the example below, you can add an extra action after the scan to keep the result the scan as an artifact for 30 days:
+Artifacts allow you to share data between jobs in a workflow and store data once that workflow has completed, in this case saving the scan result and the container image SBOM as an artifact allow you to have proof on what happened on past scans. In the example below, you can add an extra action after the scan to keep the result the scan as an artifact for 30 days:
 
 ```yaml
-  - name: 'Upload Artifact'
+  - name: 'Upload Scan Result Artifact'
     uses: actions/upload-artifact@v3
     with:
-      name: my-artifact
+      name: scan-result
+      path: result.json
+      retention-days: 30
+  - name: 'Upload SBOM Artifact'
+    uses: actions/upload-artifact@v3
+    with:
+      name: sbom
       path: result.json
       retention-days: 30
 ```
