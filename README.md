@@ -55,7 +55,7 @@ Artifacts allow you to share data between jobs in a workflow and store data once
     uses: actions/upload-artifact@v3
     with:
       name: sbom
-      path: result.json
+      path: SBOM.json
       retention-days: 30
 ```
 
