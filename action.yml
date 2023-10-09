@@ -1,4 +1,4 @@
-name: "Vision One Container Security Scan Action"
+name: "TMAS Scan Action"
 description: "Scan container images with Vision One Container Security"
 author: "Trend Micro"
 inputs:
