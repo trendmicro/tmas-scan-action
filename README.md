@@ -9,7 +9,7 @@ This tool is meant to be used as a [GitHub Action](https://github.com/features/a
 ## Requirements
 
 * Have an [Vision One Account](https://signin.v1.trendmicro.com/). [Sign up for free trial now](www.trendmicro.com/en_us/business/products/trials.html?modal=s1b-hero-vision-one-free-trial-c022c8#detection-response) if it's not already the case!
-* [A Vision One API Key](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) with `Master Administrator` role
+* [A Vision One API Key](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) with a custom role that contains the permission `Run artifact scan`.
 * A Vision One Region of choice (ap-southeast-2, eu-central-1, ap-south-1, ap-northeast-1, ap-southeast-1, us-east-1) 
 * A container image to be scan.
 
