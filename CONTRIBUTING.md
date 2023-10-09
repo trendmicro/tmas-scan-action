@@ -1,4 +1,4 @@
-# Contributing to cloudone-container-security-github-action
+# Contributing to tmas-scan-action
 
 :tada: Thank you for taking the time to contribute! :tada:
 
