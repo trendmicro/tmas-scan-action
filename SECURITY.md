@@ -11,7 +11,7 @@ The repository team makes no formal guarantee for any older maintenance tracks t
 
 The Community take all security vulnerabilities seriously. Thank you for improving the security of our open source software. We appreciate your efforts and responsible disclosure and will make every effort to acknowledge your contributions.
 
-Report security vulnerabilities by creating a request to the repository security team [here](https://github.com/trendmicro/cloudone-container-security-github-action/security/advisories/new)
+Report security vulnerabilities by creating a request to the repository security team [here](https://github.com/trendmicro/tmas-scan-action/security/advisories/new)
 
 The lead maintainer will acknowledge your request, and will send a more detailed response indicating the next steps in handling your report. After the initial reply to your report, the security team will endeavor to keep you informed of the progress towards a fix and full announcement, and may ask for additional information or guidance.
 
