@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
 env:
-  CONTAINER_NAME: "container-security-scan-action"
+  CONTAINER_NAME: "tmas-scan-action"
   RELEASE: "latest"
 permissions:
   packages: write

@@ -20,7 +20,7 @@ else
 fi
 
 # Scans the image
-tmas scan --endpoint "https://artifactscan.$REGION.cloudone.trendmicro.com" docker-archive:"$IMAGE_TARBALL" "$(if [ "$SBOM" = true ]; then echo "--saveSBOM"; fi)" > "$SCAN_RESULT_ARTIFACT"
+tmas scan "$(if [ "$MALWARE_SCAN" = true ]; then echo "--malwareScan"; fi)" -r "$REGION" docker-archive:"$IMAGE_TARBALL" "$(if [ "$SBOM" = true ]; then echo "--saveSBOM"; fi)" > "$SCAN_RESULT_ARTIFACT"
 
 # If saving SBOM is true
 if [ "$SBOM" = true ]; then
