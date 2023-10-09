@@ -1,19 +1,23 @@
-name: "Trend Cloud One Container Security Scan Action"
-description: "Scan container images with Trend Cloud One Container Security"
+name: "Vision One Container Security Scan Action"
+description: "Scan container images with Vision One Container Security"
 author: "Trend Micro"
 inputs:
-  CLOUD_ONE_API_KEY:
-    description: "Cloud One API Key"
+  TMAS_API_KEY:
+    description: "Vision One API Key"
     required: true
   IMAGE:
     description: "Image URI to scan. Not required if you are doing pre-registry scanning. See LOCAL_IMAGE_TARBALL."
     required: false
   REGION:
-    description: "Cloud One Region"
+    description: "Vision One Region"
     required: true
-    default: "us-1"
+    default: "us-east-1"
   SBOM:
     description: "Decide if you want to save the SBOM file for the image. Default is true."
+    required: false
+    default: "true"
+  MALWARE_SCAN:
+    description: "Decide if you want to scan the image for malware. Default is true."
     required: false
     default: "true"
   MAX_TOTAL:
@@ -56,12 +60,13 @@ branding:
   color: "red"
 runs:
   using: "docker"
-  image: "docker://ghcr.io/trendmicro/container-security-scan-action:latest"
+  image: "docker://ghcr.io/trendmicro/tmas-scan-action:latest"
   env:
-    CLOUD_ONE_API_KEY: ${{ inputs.CLOUD_ONE_API_KEY }}
+    TMAS_API_KEY: ${{ inputs.TMAS_API_KEY }}
     IMAGE: ${{ inputs.IMAGE }}
     REGION: ${{ inputs.REGION }}
     SBOM: ${{ inputs.SBOM }}
+    MALWARE_SCAN: ${{ inputs.MALWARE_SCAN }}
     MAX_TOTAL: ${{ inputs.MAX_TOTAL }}
     MAX_CRITICAL: ${{ inputs.MAX_CRITICAL }}
     MAX_HIGH: ${{ inputs.MAX_HIGH }}

@@ -1,32 +1,33 @@
-# Trend Cloud One Container Security Scan Action
+# TMAS Scan Action
 
 ![TM Logo](images/tm-logo.jpg)
 
-## Scan your containers with [Trend Cloud One Container Security](https://www.trendmicro.com/en_us/business/products/hybrid-cloud/cloud-one-container-image-security.html)
+## Scan your containers with [Vision One Container Security](https://www.trendmicro.com/en_in/business/products/hybrid-cloud/cloud-one-container-image-security.html)
 
 This tool is meant to be used as a [GitHub Action](https://github.com/features/actions).
 
 ## Requirements
 
-* Have an [Trend Cloud One Account](https://cloudone.trendmicro.com). [Sign up for free trial now](https://cloudone.trendmicro.com/trial) if it's not already the case!
-* [A Trend Cloud One API Key](https://cloudone.trendmicro.com/docs/identity-and-account-management/c1-api-key/#new-api-key) with `Full Access` role
-* A [Trend Cloud One Region](https://cloudone.trendmicro.com/docs/identity-and-account-management/c1-regions/) of choice
+* Have an [Vision One Account](https://signin.v1.trendmicro.com/). [Sign up for free trial now](www.trendmicro.com/en_us/business/products/trials.html?modal=s1b-hero-vision-one-free-trial-c022c8#detection-response) if it's not already the case!
+* [A Vision One API Key](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) with `Master Administrator` role
+* A Vision One Region of choice (ap-southeast-2, eu-central-1, ap-south-1, ap-northeast-1, ap-southeast-1, us-east-1) 
 * A container image to be scan.
 
 ## Usage
 
-Add an Action in your `.github/workflow` yml file to scan your image with Trend Cloud One Container Security.
+Add an Action in your `.github/workflow` yml file to scan your image with Vision One Container Security.
 
 ```yml
-- name: Trend Cloud One Container Security Scan Action
-  uses: trendmicro/cloudone-container-security-github-action@version*
+- name: Vision One Container Security Scan Action
+  uses: trendmicro/tmas-scan-action@version*
    with:
       # Mandatory
-      CLOUD_ONE_API_KEY: ${{ secrets.API_KEY }}
-      REGION: us-1
+      TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}
+      REGION: us-east-1
 
       # Optional
       SBOM: true # Saves SBOM to SBOM.json so you can export it as an artifact later.
+      MALWARE_SCAN: true # Enable malware scan.
       IMAGE: alpine # The image need to be public or the pipeline need to have access to the private image of choice.
       LOCAL_IMAGE_TARBALL: image.tar
       # For each threshold below, select the maximum number of vulnerabilities that are acceptable.
@@ -63,7 +64,7 @@ Artifacts allow you to share data between jobs in a workflow and store data once
 
 ## Contributing
 
-If you encounter a bug, think of a useful feature, or find something confusing in the docs, please [create a new issue](https://github.com/trendmicro/cloudone-container-security-github-action/issues/new)!
+If you encounter a bug, think of a useful feature, or find something confusing in the docs, please [create a new issue](https://github.com/trendmicro/tmas-scan-action/issues/new)!
 
 We :heart: pull requests. If you'd like to fix a bug, contribute to a feature or just correct a typo, please feel free to do so.
 
