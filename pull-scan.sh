@@ -20,7 +20,7 @@ else
 fi
 
 # Scans the image
-tmas scan "$(if [ "$VULNERABILITY_SCAN" = true ]; then echo "-V"; fi)" "$(if [ "$MALWARE_SCAN" = true ]; then echo "-M"; fi)" "$(if [ "$SECRETS_SCAN" = true ]; then echo "-V"; fi)" -r "$REGION" docker-archive:"$IMAGE_TARBALL" "$(if [ "$SBOM" = true ]; then echo "--saveSBOM"; fi)" > "$SCAN_RESULT_ARTIFACT"
+tmas scan "$(if [ "$VULNERABILITY_SCAN" = true ]; then echo "-V"; fi)" "$(if [ "$MALWARE_SCAN" = true ]; then echo "-M"; fi)" "$(if [ "$SECRETS_SCAN" = true ]; then echo "-S"; fi)" -r "$REGION" docker-archive:"$IMAGE_TARBALL" "$(if [ "$SBOM" = true ]; then echo "--saveSBOM"; fi)" > "$SCAN_RESULT_ARTIFACT"
 
 # If saving SBOM is true
 if [ "$SBOM" = true ]; then
