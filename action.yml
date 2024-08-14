@@ -20,6 +20,14 @@ inputs:
     description: "Decide if you want to scan the image for malware. Default is true."
     required: false
     default: "true"
+  VULNERABILITY_SCAN:
+    description: "Decide if you want to scan the image for vulnerabilities. Default is true."
+    required: true
+    default: "true"
+  SECRETS_SCAN:
+    description: "Decide if you want to scan the image for secrets. Default is true."
+    required: false
+    default: "true"
   MAX_TOTAL:
     description: "Max total of vulnerabilities acceptable in a images"
     required: false
@@ -67,6 +75,8 @@ runs:
     REGION: ${{ inputs.REGION }}
     SBOM: ${{ inputs.SBOM }}
     MALWARE_SCAN: ${{ inputs.MALWARE_SCAN }}
+    VULNERABILITY_SCAN: ${{ inputs.VULNERABILITY_SCAN }}
+    SECRETS_SCAN: ${{ inputs.SECRETS_SCAN }}
     MAX_TOTAL: ${{ inputs.MAX_TOTAL }}
     MAX_CRITICAL: ${{ inputs.MAX_CRITICAL }}
     MAX_HIGH: ${{ inputs.MAX_HIGH }}

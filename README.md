@@ -24,10 +24,11 @@ Add an Action in your `.github/workflow` yml file to scan your image with Vision
       # Mandatory
       TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}
       REGION: us-east-1
-
+      VULNERABILITY_SCAN: true
       # Optional
       SBOM: true # Saves SBOM to SBOM.json so you can export it as an artifact later.
       MALWARE_SCAN: true # Enable malware scan.
+      SECRETS_SCAN: true # Enable secrets scan.
       IMAGE: alpine # The image need to be public or the pipeline need to have access to the private image of choice.
       LOCAL_IMAGE_TARBALL: image.tar
       # For each threshold below, select the maximum number of vulnerabilities that are acceptable.
