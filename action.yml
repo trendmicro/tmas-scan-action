@@ -7,7 +7,7 @@ inputs:
     required: true
   IMAGE:
     description: "Image URI to scan. Not required if you are doing pre-registry scanning. See LOCAL_IMAGE_TARBALL."
-    required: false
+    required: true
   REGION:
     description: "Vision One Region"
     required: true
@@ -67,22 +67,104 @@ branding:
   icon: "package"
   color: "red"
 runs:
-  using: "docker"
-  image: "docker://ghcr.io/trendmicro/tmas-scan-action:latest"
-  env:
-    TMAS_API_KEY: ${{ inputs.TMAS_API_KEY }}
-    IMAGE: ${{ inputs.IMAGE }}
-    REGION: ${{ inputs.REGION }}
-    SBOM: ${{ inputs.SBOM }}
-    MALWARE_SCAN: ${{ inputs.MALWARE_SCAN }}
-    VULNERABILITY_SCAN: ${{ inputs.VULNERABILITY_SCAN }}
-    SECRETS_SCAN: ${{ inputs.SECRETS_SCAN }}
-    MAX_TOTAL: ${{ inputs.MAX_TOTAL }}
-    MAX_CRITICAL: ${{ inputs.MAX_CRITICAL }}
-    MAX_HIGH: ${{ inputs.MAX_HIGH }}
-    MAX_MEDIUM: ${{ inputs.MAX_MEDIUM }}
-    MAX_LOW: ${{ inputs.MAX_LOW }}
-    MAX_NEGLIGIBLE: ${{ inputs.MAX_NEGLIGIBLE }}
-    MAX_UNKNOWN: ${{ inputs.MAX_UNKNOWN }}
-    SCAN_RESULT_ARTIFACT: ${{ inputs.SCAN_RESULT_ARTIFACT }}
-    LOCAL_IMAGE_TARBALL: ${{ inputs.LOCAL_IMAGE_TARBALL }}
+  using: "composite"
+  steps:
+    - name: Compose TMAS inputs
+      run: |
+        # Set tmas container image arguments based on the GitHub Action input
+        args=""
+        if [ "${{ inputs.VULNERABILITY_SCAN }}" = "true" ]; then
+          args="$args -V"
+        fi
+        if [ "${{ inputs.MALWARE_SCAN }}" = "true" ]; then
+          args="$args -M"
+        fi
+        if [ "${{ inputs.SECRETS_SCAN }}" = "true" ]; then
+          args="$args -S"
+        fi
+        if [ "${{ inputs.SBOM }}" = "true" ]; then
+          args="$args --saveSBOM"
+        fi
+        args="$args -r=${{ inputs.REGION }}"
+        args="$args -v"
+        args="$args registry:${{ inputs.IMAGE }}"
+
+
+        echo "Arguments for TMAS Scan: $args"
+        echo "tmas_args=$args" >> $GITHUB_ENV    
+       
+       
+    - name: Run TMAS Scan
+      uses: "docker://raedfayad/asaas-cli:latest"
+      with:
+        # args: scan dir:. -V -v --saveSBOM
+        # args: |
+        #   scan ${{ env.tmas_args }}
+        args: env
+      env:
+        TMAS_API_KEY: ${{ inputs.TMAS_API_KEY }}
+    
+    - name: cat SBOM
+      run: |
+        if [ "${{ inputs.SBOM }}" = "true" ]; then
+          sbom_file=$(find . -type f -name "SBOM*" | head -n 1)
+          if [ -n "$sbom_file" ]; then
+            cat "$sbom_file"
+          else
+            echo "No SBOM file found."
+            exit 1
+          fi
+        else
+          echo "SBOM input is not set to true. Skipping SBOM file check."
+        fi
+  # using: "docker"
+  # image: "docker://raedfayad/asaas-cli"
+  # args:
+  #   - scan 
+  #   - registry:alpine
+  #   - -V
+  #   - -v
+
+  # image: "docker://ghcr.io/trendmicro/tmas-scan-action:latest"
+  # env:
+  #   TMAS_API_KEY: ${{ inputs.TMAS_API_KEY }}
+  #   IMAGE: ${{ inputs.IMAGE }}
+  #   REGION: ${{ inputs.REGION }}
+  #   SBOM: ${{ inputs.SBOM }}
+  #   MALWARE_SCAN: ${{ inputs.MALWARE_SCAN }}
+  #   VULNERABILITY_SCAN: ${{ inputs.VULNERABILITY_SCAN }}
+  #   SECRETS_SCAN: ${{ inputs.SECRETS_SCAN }}
+  #   MAX_TOTAL: ${{ inputs.MAX_TOTAL }}
+  #   MAX_CRITICAL: ${{ inputs.MAX_CRITICAL }}
+  #   MAX_HIGH: ${{ inputs.MAX_HIGH }}
+  #   MAX_MEDIUM: ${{ inputs.MAX_MEDIUM }}
+  #   MAX_LOW: ${{ inputs.MAX_LOW }}
+  #   MAX_NEGLIGIBLE: ${{ inputs.MAX_NEGLIGIBLE }}
+  #   MAX_UNKNOWN: ${{ inputs.MAX_UNKNOWN }}
+  #   SCAN_RESULT_ARTIFACT: ${{ inputs.SCAN_RESULT_ARTIFACT }}
+  #   LOCAL_IMAGE_TARBALL: ${{ inputs.LOCAL_IMAGE_TARBALL }}
+  # using: "composite"
+  # steps:
+  #   - name: Run TMAS Scan
+  #     shell: bash
+  #     run: |
+  #         # docker run raedfayad/asaas-cli:latest version
+  #         export TMAS_API_KEY="${{ inputs.TMAS_API_KEY }}"
+  #         docker run -e TMAS_API_KEY="${{ inputs.TMAS_API_KEY }}" -v ${{ github.workspace }}:/src raedfayad/asaas-cli:latest scan "$(if [ "${{ inputs.VULNERABILITY_SCAN }}" = true ]; then echo "-V"; fi)" "$(if [ "$MALWARE_SCAN" = true ]; then echo "-M"; fi)" "$(if [ "$SECRETS_SCAN" = true ]; then echo "-S"; fi)" -r "$REGION" registry:"$IMAGE" "$(if [ "$SBOM" = true ]; then echo "--saveSBOM"; fi)"
+  #     env:
+  #       TMAS_API_KEY: ${{ inputs.TMAS_API_KEY }}
+  #       IMAGE: ${{ inputs.IMAGE }}
+  #       REGION: ${{ inputs.REGION }}
+  #       SBOM: ${{ inputs.SBOM }}
+  #       MALWARE_SCAN: ${{ inputs.MALWARE_SCAN }}
+  #       VULNERABILITY_SCAN: ${{ inputs.VULNERABILITY_SCAN }}
+  #       SECRETS_SCAN: ${{ inputs.SECRETS_SCAN }}
+  #       MAX_TOTAL: ${{ inputs.MAX_TOTAL }}
+  #       MAX_CRITICAL: ${{ inputs.MAX_CRITICAL }}
+  #       MAX_HIGH: ${{ inputs.MAX_HIGH }}
+  #       MAX_MEDIUM: ${{ inputs.MAX_MEDIUM }}
+  #       MAX_LOW: ${{ inputs.MAX_LOW }}
+  #       MAX_NEGLIGIBLE: ${{ inputs.MAX_NEGLIGIBLE }}
+  #       MAX_UNKNOWN: ${{ inputs.MAX_UNKNOWN }}
+  #       SCAN_RESULT_ARTIFACT: ${{ inputs.SCAN_RESULT_ARTIFACT }}
+  #       LOCAL_IMAGE_TARBALL: ${{ inputs.LOCAL_IMAGE_TARBALL }}

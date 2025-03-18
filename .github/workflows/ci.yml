@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - "*"
 env:
   CONTAINER_NAME: "tmas-scan-action"
   RELEASE: "latest"
@@ -13,13 +14,25 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build -t ${{ env.CONTAINER_NAME }}:${{ env.RELEASE }} .
-    - name: Tag the Docker Image
-      run: docker tag ${{ env.CONTAINER_NAME }}:${{ env.RELEASE }} ghcr.io/trendmicro/${{ env.CONTAINER_NAME }}:${{ env.RELEASE }}
-    - name: Login to GH Packages
-      run: docker login ghcr.io -u trendmicro --password ${{ secrets.GITHUB_TOKEN }}
-    - name: Push to Packages
-      run: docker push ghcr.io/trendmicro/${{ env.CONTAINER_NAME }}:${{ env.RELEASE }}
-    
+      - uses: actions/checkout@v3
+      - name: Vision One Container Security Scan Action
+        uses: ./
+        with:
+          # Mandatory
+          TMAS_API_KEY: ${{ secrets.V1_PROD_TMAS_API_KEY }}
+          REGION: us-east-1
+          VULNERABILITY_SCAN: false
+          # Optional
+          SBOM: true # Saves SBOM to SBOM.json so you can export it as an artifact later.
+          MALWARE_SCAN: true # Enable malware scan.
+          SECRETS_SCAN: false # Enable secrets scan.
+          IMAGE: alpine # The image need to be public or the pipeline need to have access to the private image of choice.
+          # For each threshold below, select the maximum number of vulnerabilities that are acceptable.
+          MAX_TOTAL: 0
+          MAX_CRITICAL: 0
+          MAX_HIGH: 0
+          MAX_MEDIUM: 0
+          MAX_LOW: 0
+          MAX_NEGLIGIBLE: 0
+          MAX_UNKNOWN: 0
+          SCAN_RESULT_ARTIFACT: result.json # Save as an artifact in GitHub to be able to keep the result of the scan.
