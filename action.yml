@@ -1,7 +1,7 @@
 # Copyright (C) 2025 Trend Micro Inc. All rights reserved.
 
 name: tmas-scan
-description: Scan an artifact for open source vulnerabilities, secrets, and malware using the TMAS (Trend Micro Artifact Scanner) CLI. This action downloads the TMAS CLI binary, adds it to the $GITHUB_PATH, and uses it to scan the specified artifact.
+description: Scan an artifact for open source vulnerabilities, secrets, and malware using the TMAS (Trend Micro Artifact Scanner) CLI.
 inputs:
   version:
     description: Version of the TMAS CLI you would like to use (eg. 2.100.0, '2' for latest v2.x.x, or 'latest'). Specifying the 'latest' TMAS version might cause the action to fail if there is a new major TMAS version released with a breaking change.
@@ -37,7 +37,7 @@ inputs:
   tmasApiKey:
     description: Trend Vision One API Key that is associated with your Trend Vision One account, it is recommended to use a github secret for this parameter. For steps on how to obtain a Trend Vision One API Key, checkout the [setup documentation](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-artifactsannerapikey#GUID-09957805-70E7-401F-A691-F587FCE2CB8B-chuby2).
     required: true
-  githubToken: 
+  githubToken:
     description: GitHub token for authentication Github API. May use standard github actions token (secrets.GITHUB_TOKEN) or custom personal access token with repo scope.
     required: true
   skipInstall:
@@ -126,11 +126,11 @@ runs:
         TMAS_DEFAULT_ARGS: "--redacted --output=markdown=scan-report.md"
 
     - name: Report results
-      if: '!cancelled()'
+      if: "!cancelled()"
       continue-on-error: true
       id: report_results
       uses: actions/github-script@v7
-      with: 
+      with:
         github-token: ${{ inputs.githubToken }}
         script: |
           const GITHUB_ACTION_PATH = process.env.GITHUB_ACTION_PATH
@@ -150,5 +150,3 @@ runs:
         TMAS_SECRETS_SCAN: ${{ inputs.secretsScan }}
         TMAS_ARTIFACT: ${{ inputs.artifact }}
         TMAS_MARKDOWN_FILE: "scan-report.md"
-
-     
