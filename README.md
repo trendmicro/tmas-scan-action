@@ -2,75 +2,101 @@
 
 ![TM Logo](images/tm-logo.jpg)
 
-## Scan your containers with [Vision One Container Security](https://www.trendmicro.com/en_in/business/products/hybrid-cloud/cloud-one-container-image-security.html)
+Scan artifacts in your workspace for open-source vulnerabilities, malware, or secrets using [TMAS (Trend Micro Artifact Scanner)](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__artifact-scanner-tmas-2).
 
-This tool is meant to be used as a [GitHub Action](https://github.com/features/actions).
+## About
+
+This [GitHub Action](https://github.com/features/actions) installs a specified version of the TMAS CLI tool on the GitHub Actions runner and scans a specified artifact for open-source vulnerabilities, secrets, or malware.
+
+The complete scan findings are displayed in the action logs, and a summary report will be posted as a comment on any related PRs.
 
 ## Requirements
 
-* Have an [Vision One Account](https://signin.v1.trendmicro.com/). [Sign up for free trial now](www.trendmicro.com/en_us/business/products/trials.html?modal=s1b-hero-vision-one-free-trial-c022c8#detection-response) if it's not already the case!
-* [A Vision One API Key](https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs) with a custom role that contains the permission `Run artifact scan`.
-* A Vision One Region of choice (ap-southeast-2, eu-central-1, ap-south-1, ap-northeast-1, ap-southeast-1, us-east-1) 
-* A container image to be scan.
+- Have a [Vision One Account](https://signin.v1.trendmicro.com/). [Sign up for free trial now](www.trendmicro.com/en_us/business/products/trials.html?modal=s1b-hero-vision-one-free-trial-c022c8#detection-response) if you don't already have one.
+- [A Vision One API Key](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__obtaining-api-key-2).
+- Determine your Vision One region (`us-east-1`, `eu-central-1`, `ap-southeast-2`, `ap-south-1`, `ap-northeast-1`, `ap-southeast-1`, `me-central-1`).
 
 ## Usage
 
-Add an Action in your `.github/workflow` yml file to scan your image with Vision One Container Security.
+Add an action in your `.github/workflows` YAML file to scan your artifact with TMAS. TMAS can scan files, directories, and container images from a wide variety of sources. See the [artifact documentation](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__artifact-scanner-cli-2#GUID-09957805-70E7-401F-A691-F587FCE2CB8B-ofd60h__supportedArtifacts) for more details.
 
-```yml
-- name: Vision One Container Security Scan Action
-  uses: trendmicro/tmas-scan-action@version*
-   with:
-      # Mandatory
-      TMAS_API_KEY: ${{ secrets.TMAS_API_KEY }}
-      REGION: us-east-1
-      VULNERABILITY_SCAN: true
-      # Optional
-      SBOM: true # Saves SBOM to SBOM.json so you can export it as an artifact later.
-      MALWARE_SCAN: true # Enable malware scan.
-      SECRETS_SCAN: true # Enable secrets scan.
-      IMAGE: alpine # The image need to be public or the pipeline need to have access to the private image of choice.
-      LOCAL_IMAGE_TARBALL: image.tar
-      # For each threshold below, select the maximum number of vulnerabilities that are acceptable.
-      MAX_TOTAL: 0
-      MAX_CRITICAL: 0
-      MAX_HIGH: 0
-      MAX_MEDIUM: 0
-      MAX_LOW: 0
-      MAX_NEGLIGIBLE: 0
-      MAX_UNKNOWN: 0
-      SCAN_RESULT_ARTIFACT: result.json # Save as an artifact in GitHub to be able to keep the result of the scan.
-```
-
-## Artifacts (Optional)
-
-Artifacts allow you to share data between jobs in a workflow and store data once that workflow has completed, in this case saving the scan result and the container image SBOM as an artifact allow you to have proof on what happened on past scans. In the example below, you can add an extra action after the scan to keep the result the scan as an artifact for 30 days:
+### Scan a GitHub repository
 
 ```yaml
-  - name: 'Upload Scan Result Artifact'
-    uses: actions/upload-artifact@v3
-    with:
-      name: scan-result
-      path: result.json
-      retention-days: 30
-  - name: 'Upload SBOM Artifact'
-    uses: actions/upload-artifact@v3
-    with:
-      name: sbom
-      path: SBOM.json
-      retention-days: 30
+name: TMAS Scan
+
+on:
+  push:
+
+jobs:
+  tmas-scan:
+    name: TMAS Repo Scan
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download TMAS and Scan Repo for Open Source Vulnerabilities and Secrets
+        uses: trendmicro/tmas-scan-action@vX
+        with:
+          version: '2' # Recommended: pin to major version for automatic updates within v2.x.x
+          vulnerabilitiesScan: true
+          malwareScan: false
+          secretsScan: true
+          artifact: dir:.
+          additionalArgs: --region=eu-central-1
+          tmasApiKey: ${{ secrets.TMAS_API_KEY }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-**Note**: By default, GitHub stores build logs and artifacts for 90 days, and this retention period can be customized. For more information, check the [GitHub Documentation](https://docs.github.com/en/actions/using-workflows/storing-workflow-data-as-artifacts).
+### Scan a build artifact
+
+```yaml
+name: TMAS Scan
+
+on:
+  pull_request:
+
+jobs:
+  tmas-scan:
+    name: TMAS Container Scan
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Download TMAS and scan container for Open Source Vulnerabilities, Malware and Secrets
+        uses: trendmicro/tmas-scan-action@vX
+        with:
+          version: X.X.X
+          vulnerabilitiesScan: true
+          malwareScan: true
+          secretsScan: true
+          artifact: registry:my-registry/my-app:latest
+          additionalArgs: --region=eu-central-1
+          tmasApiKey: ${{ secrets.TMAS_API_KEY }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+```
+
+## Inputs
+
+The action's supported inputs and outputs are described in the [action definition file](action.yml).
+
+## Runner Prerequisites
+
+The TMAS scan action requires the following tools to be installed on the GitHub Actions runner:
+
+- `curl`
+- `jq`
+
+## Results
+
+- A summary of the TMAS scan results is posted as a comment on related PRs.
+- The complete findings of the scan can be found in the action logs under `TMAS Scan Report`.
+
+<img width="500px" src="images/scan-summary-comment.png">
+
+## Policy Evaluation
+
+You can add a policy with [Vision One Code Security](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-code-security-intro) which will fail the tmas-scan-action if the scan results don't meet expected policy standards. When this workflow is marked as required in GitHub, this can be used to block pull request merges until such issues are addressed.
 
 ## Contributing
 
-If you encounter a bug, think of a useful feature, or find something confusing in the docs, please [create a new issue](https://github.com/trendmicro/tmas-scan-action/issues/new)!
-
-We :heart: pull requests. If you'd like to fix a bug, contribute to a feature or just correct a typo, please feel free to do so.
-
-If you're thinking of adding a new feature, consider opening an issue first to discuss it to ensure it aligns to the direction of the project (and potentially save yourself some time!).
-
-## Support
-
-Official support from Trend Micro is not available. Individual contributors may be Trend Micro employees, but are not official support.
+If you encounter a bug, think of a useful feature, or find something confusing in the docs, please [create a new issue](CONTRIBUTING.md)!
