@@ -12,7 +12,7 @@ The complete scan findings are displayed in the action logs, and a summary repor
 
 ## Requirements
 
-- Have a [Vision One Account](https://signin.v1.trendmicro.com/). [Sign up for free trial now](www.trendmicro.com/en_us/business/products/trials.html?modal=s1b-hero-vision-one-free-trial-c022c8#detection-response) if you don't already have one.
+- Have a [Vision One Account](https://signin.v1.trendmicro.com/). [Sign up now](https://account.trendmicro.com) if you don't already have one.
 - [A Vision One API Key](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__obtaining-api-key-2).
 - Determine your Vision One region (`us-east-1`, `eu-central-1`, `ap-southeast-2`, `ap-south-1`, `ap-northeast-1`, `ap-southeast-1`, `me-central-1`).
 
@@ -35,6 +35,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: repo-name
 
       - name: Download TMAS and Scan Repo for Open Source Vulnerabilities and Secrets
         uses: trendmicro/tmas-scan-action@vX
@@ -43,7 +45,7 @@ jobs:
           vulnerabilitiesScan: true
           malwareScan: false
           secretsScan: true
-          artifact: dir:.
+          artifact: dir:./repo-name
           additionalArgs: --region=eu-central-1
           tmasApiKey: ${{ secrets.TMAS_API_KEY }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -92,6 +94,21 @@ The TMAS scan action requires the following tools to be installed on the GitHub 
 - The complete findings of the scan can be found in the action logs under `TMAS Scan Report`.
 
 <img width="500px" src="images/scan-summary-comment.png">
+
+### GitHub Permissions
+
+To post the scan summary comments a GitHub token must be provided to the action. In most cases the default action token `secrets.GITHUB_TOKEN` will be sufficient. However if this default token is restricted to read-only, additional permissions will need to be specified in the workflow as shown, or a personal access token used instead.
+
+```yaml
+name: TMAS Scan
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+```
 
 ## Policy Evaluation
 
