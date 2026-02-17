@@ -218,7 +218,7 @@ getDownloadObject() {
 
 	filename="tmas-cli_${mappedOs}_${mappedArch}"
 	extension=$([[ "$mappedOs" == "Linux" ]] && echo "tar.gz" || echo "zip")
-	url="https://cli.artifactscan.cloudone.trendmicro.com/tmas-cli/${tmasVersion}/${filename}.${extension}"
+	url="https://ast-cli.xdr.trendmicro.com/tmas-cli/${tmasVersion}/${filename}.${extension}"
 
 	DOWNLOAD_URL="$url" # global variable
 	log_verbose "Generated download URL: $DOWNLOAD_URL"
@@ -310,7 +310,7 @@ fetchTMASMetadata() {
 	local latest_version_string
 
 	log_verbose "Fetching TMAS metadata"
-	if ! TMAS_METADATA_JSON=$(curl "${CURL_FLAGS[@]}" "https://cli.artifactscan.cloudone.trendmicro.com/tmas-cli/metadata.json"); then
+	if ! TMAS_METADATA_JSON=$(curl "${CURL_FLAGS[@]}" "https://ast-cli.xdr.trendmicro.com/tmas-cli/metadata.json"); then
 		log_error "Failed to fetch TMAS metadata."
 		exit 1
 	fi
@@ -337,39 +337,39 @@ resolveMajorVersion() {
 	local major_version="$1"
 	local field_name="latestV${major_version}"
 	local version_string
-	
+
 	log_verbose "Looking for latest version of major version $major_version"
-	
+
 	# Check if major version is unsupported by this tool (versions less than 2)
 	if [ "$major_version" -lt 2 ]; then
 		log_error "Major version is unsupported."
 		return 1
 	fi
-	
+
 	# Check if the field exists in the metadata
 	if ! version_string=$(echo "$TMAS_METADATA_JSON" | jq -r ".$field_name"); then
 		log_error "Failed to query metadata for major version $major_version."
 		return 1
 	fi
-	
+
 	if [ -z "$version_string" ] || [ "$version_string" = "null" ]; then
 		log_error "Major version does not exist."
 		return 1
 	fi
-	
+
 	# Remove the 'v' prefix from the version string
 	local resolved_version="${version_string:1}"
-	
+
 	# Validate the resolved version
 	if ! isValidVersion "$resolved_version"; then
 		log_error "Major version $major_version is unsupported by this tool."
 		return 1
 	fi
-	
+
 	# Set the global TMAS_VERSION to the resolved version
 	TMAS_VERSION="$resolved_version"
 	log_verbose "Resolved major version $major_version to: $resolved_version"
-	
+
 	return 0
 }
 

@@ -1,5 +1,11 @@
 # Trend Micro Artifact Scanner (TMAS) GitHub Action Release Notes
 
+## [v3.1.0] - 2026-02-06
+
+### Changed
+
+- **Breaking for allowlisted networks**: The TMAS CLI download URL has changed from `cli.artifactscan.cloudone.trendmicro.com` to `ast-cli.xdr.trendmicro.com`. If your GitHub Enterprise runner uses network allowlists, you must add the new domain before upgrading.
+
 ## [v3.0.0] - 2025-09-17
 
 This release ...

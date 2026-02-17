@@ -65,7 +65,7 @@ runs:
     - name: Restore and/or Save TMAS CLI in the cache # A built-in post step will cache the tmas cli when there is a cache miss in this step
       id: cache-tmas
       if: ${{ inputs.cache == 'true' && inputs.skipInstall == 'false' }}
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ steps.tmas-binary-dir.outputs.tmasPath }}
         key: tmas-cli-v${{ steps.get_tmas_version.outputs.tmasVersion }}-${{ runner.os }}-${{ runner.arch }}
@@ -129,7 +129,7 @@ runs:
       if: "!cancelled()"
       continue-on-error: true
       id: report_results
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         github-token: ${{ inputs.githubToken }}
         script: |

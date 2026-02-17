@@ -1,6 +1,6 @@
 # Copyright (C) 2025 Trend Micro Inc. All rights reserved.
 
-FROM node:20-slim AS test-github-script
+FROM node:24-slim AS test-github-script
 
 # Copy to the working directory.
 COPY . /src/
