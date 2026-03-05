@@ -1,4 +1,4 @@
-# <img height="26px" src="https://ast-cli.xdr.trendmicro.com/images/tm-logo.svg"> TMAS Scan Report
+# <img height="26px" src="https://ast-cli.xdr.trendmicro.com/images/TrendAI-Logo.svg"> TMAS Scan Report
 Scan Results for artifact `container:latest`
 ### Scan Summary
 - 0 Malware

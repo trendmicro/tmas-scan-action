@@ -1,6 +1,6 @@
 # Contributing to TMAS GitHub Action
 
-Thank you for your interest in contributing to the TMAS (Trend Micro Artifact Scanner) GitHub Action!
+Thank you for your interest in contributing to the TMAS (TrendAI™ Artifact Scanner) GitHub Action!
 
 ## Reporting Issues
 

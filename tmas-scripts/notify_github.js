@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Copyright (C) 2025 Trend Micro Inc. All rights reserved.
-const commentLogo = "<img height=\"26px\" src=\"https://ast-cli.xdr.trendmicro.com/images/tm-logo.svg\">";
+const commentLogo = "<img height=\"26px\" src=\"https://ast-cli.xdr.trendmicro.com/images/TrendAI-Logo.svg\">";
 const commentTitle = "TMAS Scan Report";
 const unauthorizedError = "Unable to access repo resources and write comments, please check that the GitHub token provided in the TMAS action call has the necessary permissions.";
 const failureInstruction = "TMAS Scan results available in the github action logs only.";

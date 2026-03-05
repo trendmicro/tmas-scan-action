@@ -1,4 +1,4 @@
-# Trend Micro Artifact Scanner (TMAS) GitHub Action Release Notes
+# TrendAI™ Artifact Scanner (TMAS) GitHub Action Release Notes
 
 ## [v3.1.0] - 2026-02-06
 

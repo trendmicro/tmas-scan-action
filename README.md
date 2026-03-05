@@ -2,7 +2,7 @@
 
 ![TM Logo](images/tm-logo.jpg)
 
-Scan artifacts in your workspace for open-source vulnerabilities, malware, or secrets using [TMAS (Trend Micro Artifact Scanner)](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__artifact-scanner-tmas-2).
+Scan artifacts in your workspace for open-source vulnerabilities, malware, or secrets using [TMAS (TrendAI™ Artifact Scanner)](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__artifact-scanner-tmas-2).
 
 ## About
 
@@ -12,9 +12,9 @@ The complete scan findings are displayed in the action logs, and a summary repor
 
 ## Requirements
 
-- Have a [Vision One Account](https://signin.v1.trendmicro.com/). [Sign up now](https://account.trendmicro.com) if you don't already have one.
-- [A Vision One API Key](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__obtaining-api-key-2).
-- Determine your Vision One region (`us-east-1`, `eu-central-1`, `eu-west-2`, `ca-central-1`, `ap-southeast-2`, `ap-south-1`, `ap-northeast-1`, `ap-southeast-1`, `me-central-1`).
+- Have a [TrendAI Vision One™ Account](https://signin.v1.trendmicro.com/). [Sign up now](https://account.trendmicro.com) if you don't already have one.
+- [A TrendAI Vision One™ API Key](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__obtaining-api-key-2).
+- Determine your TrendAI Vision One™ region (`us-east-1`, `eu-central-1`, `eu-west-2`, `ca-central-1`, `ap-southeast-2`, `ap-south-1`, `ap-northeast-1`, `ap-southeast-1`, `me-central-1`).
 
 ## Usage
 
@@ -112,7 +112,7 @@ permissions:
 
 ## Policy Evaluation
 
-You can add a policy with [Vision One Code Security](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-code-security-intro) which will fail the tmas-scan-action if the scan results don't meet expected policy standards. When this workflow is marked as required in GitHub, this can be used to block pull request merges until such issues are addressed.
+You can add a policy with [TrendAI Vision One™ Code Security](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-code-security-intro) which will fail the tmas-scan-action if the scan results don't meet expected policy standards. When this workflow is marked as required in GitHub, this can be used to block pull request merges until such issues are addressed.
 
 ## Contributing
 
