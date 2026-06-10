@@ -20,6 +20,8 @@ The complete scan findings are displayed in the action logs, and a summary repor
 
 Add an action in your `.github/workflows` YAML file to scan your artifact with TMAS. TMAS can scan files, directories, and container images from a wide variety of sources. See the [artifact documentation](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__artifact-scanner-cli-2#GUID-09957805-70E7-401F-A691-F587FCE2CB8B-ofd60h__supportedArtifacts) for more details.
 
+The full set of features and flags available to configure the TMAS GitHub Action through the `additionalArgs` field are listed in the [CLI tool's documentation](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__artifact-scanner-cli-2) and [examples](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__tmas-examples-2).
+
 ### Scan a GitHub repository
 
 ```yaml
@@ -43,7 +45,7 @@ jobs:
         with:
           version: '2' # Recommended: pin to major version for automatic updates within v2.x.x
           vulnerabilitiesScan: true
-          malwareScan: false
+          malwareScan: false # Malware scanning is only available for container images at this time
           secretsScan: true
           artifact: dir:./repo-name
           additionalArgs: --region=eu-central-1
@@ -113,6 +115,8 @@ permissions:
 ## Policy Evaluation
 
 You can add a policy with [TrendAI Vision One™ Code Security](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-code-security-intro) which will fail the tmas-scan-action if the scan results don't meet expected policy standards. When this workflow is marked as required in GitHub, this can be used to block pull request merges until such issues are addressed.
+
+To configure the TMAS GitHub Action to use your defined TrendAI Vision One™ Code Security policy, add the `--evaluatePolicy` flag to the `additionalArgs` ([scan command flags](https://docs.trendmicro.com/en-us/documentation/article/trend-vision-one-__artifact-scanner-cli-2#GUID-09957805-70E7-401F-A691-F587FCE2CB8B-jp80o3__scanCommandFlags)). When the scan results violate the policy's blocking rules, the scan action will fail the workflow. When paired with a GitHub branch protection rule requiring the workflow to succeed, this can prevent pull request code merges until the security concern is resolved.
 
 ## Contributing
 
