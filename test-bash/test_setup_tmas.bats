@@ -262,6 +262,27 @@ teardown() {
 	fi
 }
 
+@test "Checksum mismatch rejects install" {
+	# Shim both SHA utilities to emit a fixed, never-matching hash. The real
+	# archive still downloads and the real checksums.txt is still fetched, so
+	# only the hash comparison fails — exercising the mismatch branch.
+	mkdir -p "$TEST_DIR/fake-bin"
+	for tool in sha256sum shasum; do
+		cat >"$TEST_DIR/fake-bin/$tool" <<'EOF'
+#!/bin/sh
+echo "deadbeef00000000000000000000000000000000000000000000000000000000  archive"
+EOF
+		chmod +x "$TEST_DIR/fake-bin/$tool"
+	done
+
+	PATH="$TEST_DIR/fake-bin:$PATH" run "$SCRIPT_PATH" --install --install-dir . --version 2.48.0
+
+	[ "$status" -ne 0 ]
+	[[ "$output" == *"Checksum verification failed"* ]]
+	# Gate runs before install: temp archive cleaned up, no binary placed.
+	[ ! -f "tmas" ]
+}
+
 # Test file cleanup scenarios
 @test "Temporary files are handled correctly" {
 	INSTALL_DIR="$TEST_DIR/tmas-install"

@@ -89,6 +89,7 @@ The TMAS scan action requires the following tools to be installed on the GitHub 
 
 - `curl`
 - `jq`
+- `sha256sum` (from GNU coreutils) or `shasum`
 
 ## Results
 

@@ -248,6 +248,10 @@ downloadFromUrl() {
 			rm -rf "$downloadFileName"
 			exit 1
 		fi
+		if ! verifyChecksum "$downloadFileName" "$url"; then
+			rm -rf "$downloadFileName"
+			exit 1
+		fi
 		cd "$tmpDir"
 		if ! tar -xz -f "$downloadFileName" tmas; then
 			log_error "Failed to extract the file. Exiting."
@@ -262,6 +266,10 @@ downloadFromUrl() {
 		downloadFileName="$tmpDir/$downloadFilePrefix.zip"
 		if ! curl "${CURL_FLAGS[@]}" -f "$url" -o "$downloadFileName"; then
 			log_error "Failed to download the file. Please check the URL, the TMAS version, or your network connection. Exiting."
+			rm -rf "$downloadFileName"
+			exit 1
+		fi
+		if ! verifyChecksum "$downloadFileName" "$url"; then
 			rm -rf "$downloadFileName"
 			exit 1
 		fi
@@ -280,6 +288,59 @@ downloadFromUrl() {
 	TMAS_PATH_TO_CLI="$tmpDir/tmas" # global variable
 	log_verbose "Path to Downloaded TMAS CLI: $TMAS_PATH_TO_CLI"
 
+}
+
+# Function to verify the integrity of the downloaded archive against the published checksums.txt.
+# checksums.txt lives in the same version directory as the archive and is in `sha256sum` format
+# (one "<hash>  <filename>" line per platform artifact). This is a defense-in-depth integrity gate
+# against corrupt/partial downloads and transport layer tampering.
+# Returns non-zero on any failure so the caller can clean up and exit.
+verifyChecksum() {
+	local filePath="$1"
+	local url="$2"
+	local checksumsUrl="${url%/*}/checksums.txt" 
+	local archiveName="${url##*/}"               # e.g. tmas-cli_Linux_x86_64.tar.gz
+	local shaCmd
+	local checksumsContent
+	local expectedHash
+	local actualHash
+
+	# Determine which SHA-256 utility is available (Linux: sha256sum, macOS: shasum)
+	if command -v sha256sum &>/dev/null; then
+		shaCmd="sha256sum"
+	elif command -v shasum &>/dev/null; then
+		shaCmd="shasum -a 256"
+	else
+		log_error "No SHA-256 utility (sha256sum or shasum) found. Cannot verify download integrity."
+		return 1
+	fi
+
+	log_verbose "Fetching checksums from $checksumsUrl"
+	if ! checksumsContent=$(curl "${CURL_FLAGS[@]}" "$checksumsUrl"); then
+		log_error "Failed to fetch checksums for integrity verification."
+		return 1
+	fi
+
+	# Extract the expected hash for this specific archive
+	expectedHash=$(echo "$checksumsContent" | awk -v name="$archiveName" '$2 == name {print $1}')
+	if [ -z "$expectedHash" ]; then
+		log_error "No checksum found for $archiveName in checksums.txt."
+		return 1
+	fi
+
+	# Compute the actual hash of the downloaded archive
+	if ! read -r actualHash _ < <($shaCmd "$filePath"); then
+		log_error "Failed to compute checksum for $filePath."
+		return 1
+	fi
+
+	if [ "$expectedHash" != "$actualHash" ]; then
+		log_error "Checksum verification failed for $archiveName."
+		return 1
+	fi
+
+	log_verbose "Checksum verification passed for $archiveName"
+	return 0
 }
 
 # Function to install into the specified directory

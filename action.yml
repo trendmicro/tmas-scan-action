@@ -52,23 +52,27 @@ runs:
   using: "composite"
   steps:
     - name: Get TMAS version based on user input
+      id: get_tmas_version
       if: ${{ inputs.cache == 'true' && inputs.skipInstall == 'false' }}
       shell: bash
-      id: get_tmas_version
+      env:
+        REQUESTED_VERSION: ${{ inputs.version }}
       run: |
-        tmasVersion=$(${GITHUB_ACTION_PATH}/tmas-scripts/setup_tmas.sh --metadata-lookup --version ${{ inputs.version }} --debug)
+        tmasVersion=$(${GITHUB_ACTION_PATH}/tmas-scripts/setup_tmas.sh --metadata-lookup --version "$REQUESTED_VERSION" --debug)
         echo "tmasVersion=$tmasVersion" >> $GITHUB_OUTPUT
 
     - name: Path to TMAS CLI
       id: tmas-binary-dir
       if: ${{ inputs.skipInstall == 'false' }}
       shell: bash
-      run: echo "tmasPath=${{ inputs.path }}/tmas-bin" >> $GITHUB_OUTPUT
+      env:
+        REQUESTED_PATH: ${{ inputs.path }}
+      run: echo "tmasPath=$REQUESTED_PATH/tmas-bin" >> $GITHUB_OUTPUT
 
     - name: Restore and/or Save TMAS CLI in the cache # A built-in post step will cache the tmas cli when there is a cache miss in this step
       id: cache-tmas
       if: ${{ inputs.cache == 'true' && inputs.skipInstall == 'false' }}
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ${{ steps.tmas-binary-dir.outputs.tmasPath }}
         key: tmas-cli-v${{ steps.get_tmas_version.outputs.tmasVersion }}-${{ runner.os }}-${{ runner.arch }}
@@ -76,13 +80,18 @@ runs:
     - name: Install TMAS on cache miss
       if: ${{ steps.cache-tmas.outputs.cache-hit != 'true' && inputs.skipInstall == 'false' }}
       shell: bash
-      run: ${GITHUB_ACTION_PATH}/tmas-scripts/setup_tmas.sh --install --install-dir ${{ steps.tmas-binary-dir.outputs.tmasPath }} --version ${{ inputs.version }} --debug
+      env:
+        TMAS_PATH: ${{ steps.tmas-binary-dir.outputs.tmasPath }}
+        REQUESTED_VERSION: ${{ inputs.version }}
+      run: ${GITHUB_ACTION_PATH}/tmas-scripts/setup_tmas.sh --install --install-dir "$TMAS_PATH" --version "$REQUESTED_VERSION" --debug
 
     # Add the TMAS CLI, retrieved from cache or installed by a script, to $GITHUB_PATH
     - name: Add TMAS CLI to $GITHUB_PATH
       if: ${{ inputs.skipInstall == 'false' }}
       shell: bash
-      run: echo ${{ steps.tmas-binary-dir.outputs.tmasPath }} >> $GITHUB_PATH
+      env:
+        TMAS_PATH: ${{ steps.tmas-binary-dir.outputs.tmasPath }}
+      run: echo "$TMAS_PATH" >> $GITHUB_PATH
 
     - name: Test TMAS Installation
       if: ${{ inputs.skipInstall == 'false' }}
@@ -132,7 +141,7 @@ runs:
       if: "!cancelled()"
       continue-on-error: true
       id: report_results
-      uses: actions/github-script@v8
+      uses: actions/github-script@v9
       with:
         github-token: ${{ inputs.githubToken }}
         script: |
