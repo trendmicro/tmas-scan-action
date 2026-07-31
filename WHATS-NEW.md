@@ -1,5 +1,11 @@
 # TrendAI™ Artifact Scanner (TMAS) GitHub Action Release Notes
 
+## [v3.3.0] - 2026-07-31
+
+### Added
+
+- The `tmas-scan-action` now writes the TMAS scan results summary to the GitHub Action job summary. This works for every run, including scheduled or final-stage build runs that are not associated with a pull request, so results no longer have to be retrieved from the JSON logs. The existing PR comment behavior is unchanged.
+
 ## [v3.1.0] - 2026-02-06
 
 ### Changed

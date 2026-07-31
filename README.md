@@ -8,7 +8,7 @@ Scan artifacts in your workspace for open-source vulnerabilities, malware, or se
 
 This [GitHub Action](https://github.com/features/actions) installs a specified version of the TMAS CLI tool on the GitHub Actions runner and scans a specified artifact for open-source vulnerabilities, secrets, or malware.
 
-The complete scan findings are displayed in the action logs, and a summary report will be posted as a comment on any related PRs.
+The complete scan findings are displayed in the action logs, a summary report is written to the GitHub Action job summary, and the same summary is posted as a comment on any related PRs.
 
 ## Requirements
 
@@ -93,7 +93,8 @@ The TMAS scan action requires the following tools to be installed on the GitHub 
 
 ## Results
 
-- A summary of the TMAS scan results is posted as a comment on related PRs.
+- A summary of the TMAS scan results is written to the GitHub Action job summary, shown at the bottom of the workflow run page. This works for every run, including scheduled or final-stage build runs that are not tied to a pull request.
+- A summary of the TMAS scan results is also posted as a comment on related PRs.
 - The complete findings of the scan can be found in the action logs under `TMAS Scan Report`.
 
 <img width="500px" src="images/scan-summary-comment.png">

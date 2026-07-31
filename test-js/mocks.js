@@ -2,7 +2,8 @@
 
 const assert = require('assert');
 
-function getMockCore() {
+function getMockCore(callRegistration) {
+  let summaryBuffer = "";
   return {
     info: function(message) {
       console.log(`INFO: ${message}`);
@@ -12,6 +13,20 @@ function getMockCore() {
     },
     warning: function(message) {
       console.log(`WARNING: ${message}`);
+    },
+    summary: {
+      addRaw: function(text) {
+        summaryBuffer += text;
+        return this;
+      },
+      write: function() {
+        console.log(`MOCK: Call to write action summary`);
+        if (callRegistration) {
+          registerCall(callRegistration, "writeSummary", { body: summaryBuffer });
+        }
+        summaryBuffer = "";
+        return Promise.resolve();
+      }
     }
   };
 }

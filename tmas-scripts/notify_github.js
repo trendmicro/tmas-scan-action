@@ -89,18 +89,31 @@ async function findPreviousComment({github, context, core, inputs, prNumber}) {
   return matchingComment
 }
 
-// Use Github API to create or update a comment on the PR
-async function upsertComment({github, context, core, fs, inputs, prNumber, existingComment, commentContent}) {
-  // Read the content of markdown file for comment content
+// Build the report body shared by the PR comment and the action job summary
+function buildReportBody({context, inputs, commentContent}) {
   const commentHeader = `# ${commentLogo} ${commentTitle}\nScan Results for artifact \`${inputs.artifact}\`\n`;
   var commentBody = `${commentHeader}${commentContent}`;
 
   // When truncating finding tables, the markdown output contains the notification "Limited to 10 findings, the full list can be found in JSON output"
-  // Replace comment substring "JSON output" with "the <Job> action logs" for more clarity in the GHA comment
+  // Replace comment substring "JSON output" with "the <Job> action logs" for more clarity
   const workflowName = context.workflow ? context.workflow : "";
   const jobID = context.job ? context.job : "";
   const logLocation = jobID === "" ? `"${workflowName}"` : `"${workflowName} / ${jobID}"`;
-  commentBody = commentBody.replace(/JSON output/, `the ${logLocation} action logs`);
+  return commentBody.replace(/JSON output/, `the ${logLocation} action logs`);
+}
+
+// Write the scan report to the GitHub Action job summary
+async function writeJobSummary({context, core, inputs, commentContent}) {
+  const summaryBody = buildReportBody({context, inputs, commentContent});
+  await core.summary.addRaw(summaryBody).write().catch((error) => {
+    // Failing to write the summary should not fail the action; results remain in the logs
+    core.warning(`Failed to write scan results to the action job summary: ${error.message}`);
+  });
+}
+
+// Use Github API to create or update a comment on the PR
+async function upsertComment({github, context, core, fs, inputs, prNumber, existingComment, commentContent}) {
+  const commentBody = buildReportBody({context, inputs, commentContent});
 
   // If comment ID is empty, use GitHub API to create a comment on the PR, else update the existing comment
   if (!existingComment) {
@@ -144,6 +157,9 @@ module.exports = async ({ github, context, core, fs, inputs}) => {
   if (!commentContent) {
     return;
   }
+
+  // Always publish the report to the action job summary, regardless of whether a PR exists
+  await writeJobSummary({context, core, inputs, commentContent});
 
   let prIds = [];
     prIds = await findPullRequest({github, context, core}).catch((error) => {

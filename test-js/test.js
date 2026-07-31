@@ -25,7 +25,6 @@ const workflowDispatchEvent = "workflow_dispatch";
 })();
 
 async function Test_NotifyGithub() {
-    const mockCore = getMockCore();
     const mockContext = getMockContext({
       repoOwner: exampleOwner,
       repoName: exampleRepo,
@@ -66,6 +65,9 @@ async function Test_NotifyGithub() {
         }
       },
       expectedCalls: {
+        writeSummary: [
+          { body: exampleComment }
+        ],
         listPulls: [
           { owner: exampleOwner, repo: exampleRepo, head: `${exampleOwner}:${exampleBranch}` }
         ],
@@ -93,6 +95,9 @@ async function Test_NotifyGithub() {
         },
       },
       expectedCalls: {
+        writeSummary: [
+          { body: exampleComment }
+        ],
         listPulls: [
           { owner: exampleOwner, repo: exampleRepo, head: `${exampleOwner}:${exampleBranch}` }
         ],
@@ -106,13 +111,16 @@ async function Test_NotifyGithub() {
       inputs: defaultInputs
     },
     {
-      name: "No PR found linked to branch, graceful exit",
+      name: "No PR found linked to branch, summary still written, graceful exit",
       mockResponses: {
         listPulls: {
           data: []
         }
       },
       expectedCalls: {
+        writeSummary: [
+          { body: exampleComment }
+        ],
         listPulls: [
           { owner: exampleOwner, repo: exampleRepo, head: `${exampleOwner}:${exampleBranch}` }
         ]
@@ -136,6 +144,9 @@ async function Test_NotifyGithub() {
         }
       },
       expectedCalls: {
+        writeSummary: [
+          { body: exampleComment }
+        ],
         listPulls: [
           { owner: exampleOwner, repo: exampleRepo, head: `${exampleOwner}:${exampleBranch}` }
         ],
@@ -156,6 +167,7 @@ async function Test_NotifyGithub() {
     console.log(`\n** TEST ** Test_NotifyGithub: ${tc.name}`);
 
     const callRegistrations = {};
+    const mockCore = getMockCore(callRegistrations);
     const mockGithub = getMockGithubClient(tc.mockResponses, callRegistrations);
 
     await assert.doesNotReject(script({github: mockGithub, context: mockContext, core: mockCore, fs, inputs: tc.inputs}));
@@ -166,7 +178,6 @@ async function Test_NotifyGithub() {
 }
 
 async function Test_NotifyGithub_Triggers() {
-  const mockCore = getMockCore();
   const inputs = {
     artifact: "container:latest",
     markdownFile: "test-js/test-data/markdownReport.md",
@@ -186,7 +197,12 @@ async function Test_NotifyGithub_Triggers() {
     }
   };
 
+  const exampleComment = fs.readFileSync("test-js/test-data/expectedGithubComment.md", 'utf-8');
+
   const defaultExpectedCalls = {
+    writeSummary: [
+      { body: exampleComment }
+    ],
     listPulls: [
       { owner: exampleOwner, repo: exampleRepo, head: `${exampleOwner}:${examplePRHeadRef}` }
     ],
@@ -238,7 +254,7 @@ async function Test_NotifyGithub_Triggers() {
       expectedCalls: defaultExpectedCalls
     },
     {
-      name: "Unsupported event, graceful exit",
+      name: "Unsupported event, summary still written, graceful exit",
       mockContext: getMockContext({
         repoOwner: exampleOwner,
         repoName: exampleRepo,
@@ -247,7 +263,11 @@ async function Test_NotifyGithub_Triggers() {
         eventName: "issue_comment"
       }),
       mockResponses: {},
-      expectedCalls: {}
+      expectedCalls: {
+        writeSummary: [
+          { body: exampleComment }
+        ]
+      }
     }
   ]
 
@@ -255,6 +275,7 @@ async function Test_NotifyGithub_Triggers() {
     console.log(`\n** TEST ** Test_NotifyGithub_Triggers: ${tc.name}`);
 
     const callRegistrations = {};
+    const mockCore = getMockCore(callRegistrations);
     const mockGithub = getMockGithubClient(tc.mockResponses, callRegistrations);
 
     await assert.doesNotReject(script({github: mockGithub, context: tc.mockContext, core: mockCore, fs, inputs}));

@@ -206,11 +206,11 @@ teardown() {
 	https_proxy="https://not-existent" run "$SCRIPT_PATH" --metadata-lookup --version latest --debug
 
 	[ "$status" -eq 1 ]
-	[[ "$output" == *"Will retry in 1 second. 5 retries left"* ]]
-	[[ "$output" == *"Will retry in 2 seconds. 4 retries left"* ]]
-	[[ "$output" == *"Will retry in 4 seconds. 3 retries left"* ]]
-	[[ "$output" == *"Will retry in 8 seconds. 2 retries left"* ]]
-	[[ "$output" == *"Will retry in 16 seconds. 1 retry left"* ]]
+	[[ "$output" == *"Retrying in 1 second. 5 retries left"* ]]
+	[[ "$output" == *"Retrying in 2 seconds. 4 retries left"* ]]
+	[[ "$output" == *"Retrying in 4 seconds. 3 retries left"* ]]
+	[[ "$output" == *"Retrying in 8 seconds. 2 retries left"* ]]
+	[[ "$output" == *"Retrying in 16 seconds. 1 retry left"* ]]
 	[[ "$output" == *"[ERROR] Failed to fetch TMAS metadata."* ]]
 }
 
