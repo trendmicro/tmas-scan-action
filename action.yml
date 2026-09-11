@@ -67,7 +67,9 @@ runs:
       shell: bash
       env:
         REQUESTED_PATH: ${{ inputs.path }}
-      run: echo "tmasPath=$REQUESTED_PATH/tmas-bin" >> $GITHUB_OUTPUT
+      run: |
+        REQUESTED_PATH="${REQUESTED_PATH//\$GITHUB_WORKSPACE/$GITHUB_WORKSPACE}"
+        echo "tmasPath=$REQUESTED_PATH/tmas-bin" >> "$GITHUB_OUTPUT"
 
     - name: Restore and/or Save TMAS CLI in the cache # A built-in post step will cache the tmas cli when there is a cache miss in this step
       id: cache-tmas

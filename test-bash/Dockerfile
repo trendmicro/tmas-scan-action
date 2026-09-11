@@ -1,6 +1,6 @@
 # Copyright (C) 2025 Trend Micro Inc. All rights reserved.
 
-FROM bats/bats@sha256:6e4b9369468b7f3fd8f402ac6cc8ea7b2e4903eae28d08785f31a0245eb51a44 AS test-tmas-scripts
+FROM bats/bats@sha256:5322b877351fda0cc435de8c6116de7d0a2ec79d7c680132a0ef329a633bc66f AS test-tmas-scripts
 
 RUN apk --no-cache --update add curl jq
 
